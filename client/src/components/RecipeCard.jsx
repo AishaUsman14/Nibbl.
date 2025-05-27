@@ -1,59 +1,89 @@
-import { useState, useEffect } from 'react';
-import './icons.js'; // your FontAwesome icons setup
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import '../components/icons.js';
 
-const RecipeCard = ({ recipe, onClick, onSave, isSaved }) => {
-    const [isHeartFilled, setIsHeartFilled] = useState(isSaved);
-
-    useEffect(() => {
-        setIsHeartFilled(isSaved); // Sync when saved state changes
-    }, [isSaved]);
-
-    const handleHeartClick = async (e) => {
+const RecipeCard = ({ recipe, onClick, onSave, isSaved, compact = false }) => {
+    const handleSaveClick = (e) => {
         e.stopPropagation();
-        const newState = !isHeartFilled;
-        setIsHeartFilled(newState); // Optimistic UI update
+        onSave(recipe, !isSaved);
+    };
 
-        try {
-            await onSave(recipe, newState);
-        } catch (error) {
-            // Revert UI if API call fails
-            setIsHeartFilled(!newState);
-            alert('Failed to update saved recipes. Please try again.');
+    // Function to truncate text to a certain length
+    const truncateText = (text, maxLength) => {
+        if (!text) return '';
+        return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+    };
+
+    // Function to render star rating
+    const renderStarRating = (rating) => {
+        const stars = [];
+        const fullStars = Math.floor(rating || 0);
+        const hasHalfStar = (rating || 0) - fullStars >= 0.5;
+
+        for (let i = 1; i <= 5; i++) {
+            if (i <= fullStars) {
+                stars.push(<FontAwesomeIcon key={i} icon="star" className="star-icon" style={{color: '#f6d967'}} />);
+            } else if (i === fullStars + 1 && hasHalfStar) {
+                stars.push(<FontAwesomeIcon key={i} icon="star-half-alt" className="star-icon" style={{color: '#f6d967'}} />);
+            } else {
+                stars.push(<FontAwesomeIcon key={i} icon={['far', 'star']} className="star-icon"style={{color: '#f6d967'}}  />);
+            }
         }
+
+        return stars;
     };
 
     return (
-        <div className="recipecard" onClick={() => onClick(recipe)} style={{ cursor: 'pointer' }}>
-            <img src={recipe.image} alt={recipe.title} />
-            <div className="recipecard-content">
-                <h2>{recipe.title}</h2>
-                <p className="preptime">
-                    <FontAwesomeIcon icon="clock" className="clock-icon" />
-                    <span> {recipe.prepTime} minutes</span>
-                </p>
-            </div>
-
-            <div className="star-rating">
-                {[...Array(5)].map((_, i) => (
-                    <FontAwesomeIcon key={i} icon="star" className="star-icon" style={{ color: '#FFD700' }} />
-                ))}
-            </div>
-
-            <div
-                className="heart-icon"
-                onClick={handleHeartClick}
-                aria-label={isHeartFilled ? "Remove from favorites" : "Add to favorites"}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") handleHeartClick(e);
-                }}
-            >
+        <div
+            className={`recipecard ${compact ? 'compact' : ''}`}
+            onClick={() => onClick(recipe)}
+        >
+            <div className="heart-icon" onClick={handleSaveClick}>
                 <FontAwesomeIcon
-                    icon="heart"
-                    style={{ color: isHeartFilled ? '#ffc122' : 'rgba(255,255,255,0.92)' }}
+                    icon={isSaved ? 'heart' : ['far', 'heart']}
+                    style={{ color: isSaved ? '#fbdb86' : '#fff' }}
                 />
+            </div>
+
+            {recipe.image ? (
+                <img
+                    src={recipe.image}
+                    alt={recipe.title || recipe.name}
+                    loading="lazy"
+                />
+            ) : (
+                <img
+                    src="/default-recipe.jpg"
+                    alt="Default recipe"
+                    loading="lazy"
+                />
+            )}
+
+            <div className="recipecard-content">
+                <div className="recipe-category">
+                    {recipe.category && (
+                        <span className="category-tag">
+                            {recipe.category}
+                        </span>
+                    )}
+                </div>
+
+                <h2 title={recipe.title || recipe.name}>
+                    {truncateText(recipe.title || recipe.name, compact ? 20 : 28)}
+                </h2>
+
+                <div className="preptime">
+                    <FontAwesomeIcon icon="clock" className="clock-icon" />
+                    {recipe.prepTime ? `${recipe.prepTime} minutes` : 'Not specified'}
+                </div>
+
+                <div className="star-rating">
+                    <div className="stars-display">
+                        {renderStarRating(recipe.rating)}
+                    </div>
+                    <span className="rating-number">
+                        {recipe.rating ? recipe.rating.toFixed(1) : "New"}
+                    </span>
+                </div>
             </div>
         </div>
     );
