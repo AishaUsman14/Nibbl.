@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useAuthContext } from '../hooks/useAuthContext'; // Adjust path as needed
 
 const AddUserOrRecipe = () => {
+    const { user } = useAuthContext();
+
     const [formType, setFormType] = useState('user');
     const [formData, setFormData] = useState({
         // User
@@ -11,7 +14,6 @@ const AddUserOrRecipe = () => {
 
         // Recipe
         title: '',
-        description: '',
         ingredients: '',
         servings: '',
         prepTime: '',
@@ -40,6 +42,12 @@ const AddUserOrRecipe = () => {
         setError('');
         setSuccessMsg('');
 
+        if (!user || !user.token) {
+            setError('You must be logged in as an admin to perform this action.');
+            setLoading(false);
+            return;
+        }
+
         try {
             let url = '';
             let payload = {};
@@ -62,7 +70,6 @@ const AddUserOrRecipe = () => {
 
                 if (
                     !formData.title ||
-                    !formData.description ||
                     !formData.ingredients ||
                     !formData.servings ||
                     !formData.prepTime ||
@@ -73,7 +80,6 @@ const AddUserOrRecipe = () => {
 
                 payload = {
                     title: formData.title,
-                    description: formData.description,
                     ingredients: formData.ingredients.split(',').map(s => s.trim()),
                     servings: parseInt(formData.servings),
                     prepTime: parseInt(formData.prepTime),
@@ -88,7 +94,10 @@ const AddUserOrRecipe = () => {
 
             const res = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`,
+                },
                 body: JSON.stringify(payload),
             });
 
@@ -104,7 +113,6 @@ const AddUserOrRecipe = () => {
                 password: '',
                 role: 'user',
                 title: '',
-                description: '',
                 ingredients: '',
                 servings: '',
                 prepTime: '',
@@ -127,12 +135,14 @@ const AddUserOrRecipe = () => {
             {/* Toggle Buttons */}
             <div className="form-toggle">
                 <button
+                    type="button"
                     className={`toggle-button ${formType === 'user' ? 'active' : ''}`}
                     onClick={() => setFormType('user')}
                 >
                     Add User
                 </button>
                 <button
+                    type="button"
                     className={`toggle-button ${formType === 'recipe' ? 'active' : ''}`}
                     onClick={() => setFormType('recipe')}
                 >
@@ -152,7 +162,6 @@ const AddUserOrRecipe = () => {
                 ) : (
                     <>
                         <Input label="Title" name="title" value={formData.title} onChange={handleChange} />
-                        <Textarea label="Description" name="description" value={formData.description} onChange={handleChange} />
                         <Input label="Ingredients (comma separated)" name="ingredients" value={formData.ingredients} onChange={handleChange} />
                         <Input label="Servings" name="servings" value={formData.servings} onChange={handleChange} type="number" />
                         <Input label="Prep Time (in minutes)" name="prepTime" value={formData.prepTime} onChange={handleChange} type="number" />
@@ -165,11 +174,7 @@ const AddUserOrRecipe = () => {
                     </>
                 )}
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="submit-button"
-                >
+                <button type="submit" disabled={loading} className="submit-button">
                     {loading ? 'Submitting...' : `Add ${formType === 'user' ? 'User' : 'Recipe'}`}
                 </button>
 
@@ -218,7 +223,9 @@ const Select = ({ label, name, value, onChange, options }) => (
             className="form-input"
         >
             {options.map(opt => (
-                <option key={opt} value={opt}>{opt.charAt(0).toUpperCase() + opt.slice(1)}</option>
+                <option key={opt} value={opt}>
+                    {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                </option>
             ))}
         </select>
     </div>

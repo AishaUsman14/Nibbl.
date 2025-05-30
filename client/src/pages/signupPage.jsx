@@ -36,8 +36,8 @@ const Signup = () => {
         <div className="auth-page">
             <div className="auth-card">
                 <div className="auth-header">
-                    <FontAwesomeIcon icon={faLemon} className="auth-icon" />
-                    <h1>Join The Zest Club</h1>
+                    <p className='auth-icon'></p>
+                    <h1>Join Nibbl – Your Recipe Hub Awaits</h1>
                     <p className="auth-subtitle">Create your account and start exploring recipes</p>
                 </div>
 

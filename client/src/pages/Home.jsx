@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 import '../components/icons.js';
 import RecipeCard from "../components/RecipeCard";
@@ -18,6 +18,25 @@ const Home = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const exploreRef = useRef(null);
+
+    // 🔄 Rotating placeholder text
+    const placeholders = [
+        "What do you feel like nibblin’ today?",
+        "Got an ingredient? We'll make it magic.",
+        "Solo cooking? Let’s find your match.",
+        "Feeling sweet, spicy, or just hungry?",
+        "Start with a nibbl…"
+    ];
+    const [placeholder, setPlaceholder] = useState(placeholders[0]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const randomIndex = Math.floor(Math.random() * placeholders.length);
+            setPlaceholder(placeholders[randomIndex]);
+        }, 3000); // rotate every 3 seconds
+
+        return () => clearInterval(interval);
+    }, []);
 
     const handleRecipeClick = (recipe) => {
         setSelectedRecipe(recipe);
@@ -61,6 +80,7 @@ const Home = () => {
             console.error("Failed to fetch saved recipes");
         }
     };
+
     const scrollToExplore = () => {
         exploreRef.current.scrollIntoView({ behavior: 'smooth' });
     };
@@ -81,8 +101,7 @@ const Home = () => {
                 throw new Error('Failed to update saved recipes');
             }
 
-            const data = await res.json(); // backend response with savedRecipes array
-
+            const data = await res.json();
             setSavedRecipes(data.savedRecipes.map(id => id.toString()));
         } catch (err) {
             console.error("Failed to update saved recipes:", err);
@@ -90,7 +109,6 @@ const Home = () => {
         }
     };
 
-    // Filter recipes based on searchTerm (case-insensitive)
     const filteredRecipes = recipes.filter(recipe => {
         const title = recipe.title || recipe.name || '';
         return title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -125,10 +143,10 @@ const Home = () => {
                 />
                 <div className="hero-overlay">
                     <h1 className="hero-heading">Discover Delicious <span className="highlight">Recipes</span></h1>
-                    <h3 className="hero-tagline">For solo cooks, first-timers, and flavor chasers</h3>
+                    <h3 className="hero-tagline">Cook what you love — no experience needed.</h3>
                     <button className="explore-btn" onClick={scrollToExplore}>
-                        Start Cooking
-                        <FontAwesomeIcon icon="utensils" className="cta-icon" />
+                        Flavor Starts Here
+                        <FontAwesomeIcon icon="bowl-rice" className="cta-icon" />
                     </button>
                 </div>
             </div>
@@ -139,14 +157,14 @@ const Home = () => {
                     <input
                         type="text"
                         className="search"
-                        placeholder="Find the perfect recipe for any occasion."
+                        placeholder={placeholder}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
             </div>
 
-            <h3 className="featured" ref={exploreRef} >Explore All Recipes.</h3>
+            <h3 className="featured" ref={exploreRef}>Explore All Recipes.</h3>
 
             <div className="recipeslist">
                 {filteredRecipes.length === 0 ? (
@@ -163,7 +181,6 @@ const Home = () => {
                     ))
                 )}
             </div>
-
 
             {isModalOpen && (
                 <RecipeModal recipe={selectedRecipe} onClose={() => setIsModalOpen(false)} />

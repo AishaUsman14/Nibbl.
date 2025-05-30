@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLemon, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
+import {faLemon, faEnvelope, faLock, faCookieBite} from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -35,7 +35,7 @@ const Login = () => {
         <div className="auth-page">
             <div className="auth-card">
                 <div className="auth-header">
-                    <FontAwesomeIcon icon={faLemon} className="auth-icon" />
+                   <p className='auth-icon'></p>
                     <h1>Welcome Back</h1>
                     <p className="auth-subtitle">Login to continue</p>
                 </div>

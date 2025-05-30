@@ -10,7 +10,7 @@ const Footer = () => {
         <footer className="footer">
             <div className="footer-content">
                 <div className="footer-section brand">
-                    <h2 className="footer-logo">Zest</h2>
+                    <h2 className="footer-logo">Nibbl.</h2>
                     <p className="footer-tagline">
                         Discover delicious recipes and culinary inspiration
                     </p>
@@ -28,7 +28,7 @@ const Footer = () => {
             
             <div className="footer-bottom">
                 <div className="copyright">
-                    <p>&copy; {currentYear} Zest. All rights reserved.</p>
+                    <p>&copy; {currentYear} Nibbl. All rights reserved.</p>
                 </div>
                 <div className="footer-credit">
                     <p>Made with <FontAwesomeIcon icon={faHeart} className="heartt-icon" /> and <FontAwesomeIcon icon={faUtensils} /></p>
