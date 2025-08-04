@@ -18,8 +18,8 @@ Welcome to **Nibbl.** — your go-to recipe website for meal inspiration and qui
 
 1. **Clone the repo**
    ```bash
-   git clone https://github.com/AishaUsman14/zest.git
-   cd zest
+   git clone https://github.com/AishaUsman14/nibbl.git
+   cd nibbl
    ```
 
 2. **Install dependencies**
