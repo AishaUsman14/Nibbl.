@@ -1,6 +1,6 @@
-# 🥗 Zest
+# 🍪 Nibbl.
 
-Welcome to **Zest** — your go-to recipe website for meal inspiration and quick, delicious recipes! Whether you’re a seasoned chef or a kitchen newbie, Zest has something tasty for everyone.
+Welcome to **Nibbl.** — your go-to recipe website for meal inspiration and quick, delicious recipes! Whether you’re a seasoned chef or a kitchen newbie, Nibbl has something tasty for everyone.
 
 ---
 
